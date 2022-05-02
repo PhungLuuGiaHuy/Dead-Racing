@@ -161,8 +161,56 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c551805dcfa13804e92e94fb8c0a48fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  test: 0
   drive: 2
   motorTorque: 1500
+  gears:
+  - 2
+  - 1.7
+  - 1.3
+  - 0.9
+  - 0.4
+  gearChangeSpeed:
+  - 100
+  - 150
+  - 200
+  - 250
+  gearNum: 1
+  reverse: 0
+  engineRPM: 0
+  enginepower:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 4640.3335
+      value: 683.9649
+      inSlope: -0.0018419941
+      outSlope: -0.0018419941
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.25825256
+    - serializedVersion: 3
+      time: 6017.594
+      value: -7.089508
+      inSlope: -0.046021786
+      outSlope: -0.046021786
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   DownForceValue: 50
   brakepower: 3000
   KPH: 0
@@ -171,13 +219,18 @@ MonoBehaviour:
   horizontal: 0
   vertical: 0
   totalPower: 0
+  wheelsRPM: 0
+  lastValue: 0
   slip:
   - 0
   - 0
   - 0
   - 0
   thrust: 1000
+  maxRPM: 0
+  minRPM: 0
   IM: {fileID: 0}
+  manager: {fileID: 0}
   wheelMeshes: {fileID: 0}
   wheelColliders: {fileID: 0}
   wheels:
@@ -351,9 +404,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db3ca641dac2eca4e9e9bde3b7d95e3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HH: {fileID: 0}
+  RR: {fileID: 0}
   needle: {fileID: 0}
   vehicleSpeed: 0
+  startPosition: {fileID: 0}
+  kph: {fileID: 0}
+  currentPosition: {fileID: 0}
+  neeedle: {fileID: 0}
 --- !u!4 &452549404
 Transform:
   m_ObjectHideFlags: 0
