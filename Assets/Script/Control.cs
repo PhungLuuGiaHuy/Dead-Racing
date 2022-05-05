@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Control : MonoBehaviour
 {  
@@ -48,6 +49,7 @@ public class Control : MonoBehaviour
        horizontal = IM.horizontal;
        vertical = IM.vertical;
        lastValue = engineRPM;
+        if(SceneManager.GetActiveScene().name == "awakeScene")return;
        addDownForce();
        animateWheels();
        moveVehicle();

@@ -227,8 +227,8 @@ MonoBehaviour:
   - 0
   - 0
   thrust: 1000
-  maxRPM: 0
-  minRPM: 0
+  maxRPM: 5500
+  minRPM: 3000
   IM: {fileID: 0}
   manager: {fileID: 0}
   wheelMeshes: {fileID: 0}
@@ -243,6 +243,32 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+--- !u!114 &72453237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 72453225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d62339d4d3dabe43b2b6958164fdde1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  engineSoundStyle: 1
+  lowAccelClip: {fileID: 8300000, guid: 3380db3bfb81c2f4291edd18af21d817, type: 3}
+  lowDecelClip: {fileID: 8300000, guid: 3380db3bfb81c2f4291edd18af21d817, type: 3}
+  highAccelClip: {fileID: 8300000, guid: 6d09dbad70eb5d34594c83df9759be52, type: 3}
+  highDecelClip: {fileID: 8300000, guid: f5e5509573162d74a8f8b6dec9302e3a, type: 3}
+  pitchMultiplier: 1
+  lowPitchMin: 1
+  lowPitchMax: 6
+  highPitchMultiplier: 0.25
+  maxRolloffDistance: 500
+  dopplerLevel: 1
+  useDoppler: 1
+  m_CarControl: {fileID: 72453235}
+  inputManager: {fileID: 72453234}
 --- !u!1 &77266808
 GameObject:
   m_ObjectHideFlags: 0
@@ -384,7 +410,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 452549404}
-  - component: {fileID: 452549403}
+  - component: {fileID: 452549405}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -392,25 +418,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &452549403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 452549402}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db3ca641dac2eca4e9e9bde3b7d95e3e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RR: {fileID: 0}
-  needle: {fileID: 0}
-  vehicleSpeed: 0
-  startPosition: {fileID: 0}
-  kph: {fileID: 0}
-  currentPosition: {fileID: 0}
-  neeedle: {fileID: 0}
 --- !u!4 &452549404
 Transform:
   m_ObjectHideFlags: 0
@@ -426,6 +433,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &452549405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452549402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db3ca641dac2eca4e9e9bde3b7d95e3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RR: {fileID: 72453235}
+  neeedle: {fileID: 1751824424}
+  vehicleSpeed: 0
+  kph: {fileID: 0}
 --- !u!1 &544709680
 GameObject:
   m_ObjectHideFlags: 0

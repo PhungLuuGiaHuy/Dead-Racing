@@ -7,33 +7,33 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public Control RR;
-    public GameObject needle;
+    public GameObject neeedle;
     private float startPosiziton = -140f ,endPosition = -405f ;
     private float desiredPosition;
     public float vehicleSpeed;
-    public GameObject startPosition;
+   // public GameObject startPosition;
     public Text kph;
-    public Text currentPosition;
-    public GameObject neeedle;
+   // public Text currentPosition;
+    
     
 
     // Start is called before the first frame update
     void Awake()
     {
-      RR = GameObject.FindGameObjectWithTag ("Player").GetComponent<Control> ();
+     
         
     }
 
     
    private void FixedUpdate(){
        
-       // kph.text = RR.KPH.ToString ("0");
-        // updateNeedle();
+        vehicleSpeed = RR.KPH;
+         updateNeedle();
         
     }
     public void updateNeedle () {
         desiredPosition = startPosiziton - endPosition;
-        float temp = RR.engineRPM / 10000;
+        float temp = vehicleSpeed / 180;
         neeedle.transform.eulerAngles = new Vector3 (0, 0, (startPosiziton - temp * desiredPosition));
 
     }
