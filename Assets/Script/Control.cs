@@ -15,17 +15,19 @@ public class Control : MonoBehaviour
    [SerializeField] private driveType drive;
    [Header("Variables")]
     public int motorTorque = 200; 
+    public float handBrakeFrictionMultiplier = 2f;
     public float[] gears;
     public float[] gearChangeSpeed;
     [HideInInspector]public int gearNum = 1;
     [HideInInspector]public bool reverse = false;
     [HideInInspector]public float engineRPM;
+    [HideInInspector]public bool playPauseSmoke = true,hasFinished;
     
     public AnimationCurve enginepower;
     public float DownForceValue = 100f;
     public float brakepower = 50000;
     public float KPH;
-    public float radius = 6, brakPower = 10, horizontal , vertical, totalPower, wheelsRPM, lastValue;
+    public float radius = 6, brakPower = 10, horizontal , vertical, totalPower, wheelsRPM, lastValue, driftFactor;
     public float[] slip = new float[4];
     public float thrust = 20000f;
     public float maxRPM = 5500 , minRPM = 3000;
@@ -38,7 +40,7 @@ public class Control : MonoBehaviour
     private Rigidbody rigidbody;
      private bool flag=false;
      private float smoothTime = 0.09f;
-    
+    private WheelFrictionCurve  forwardFriction,sidewaysFriction;
     void Start()
     {   
 
@@ -56,52 +58,62 @@ public class Control : MonoBehaviour
        steerVehicle(); 
        getFriction();
        calculateEnginePower();
+       adjustTraction();
       
    }
    
    
-      void moveVehicle(){
+      private void moveVehicle(){
 
-        // brakeVehicle();
+        brakeVehicle();
 
         if (drive == driveType.allWheelDrive){
             for (int i = 0; i < wheels.Length; i++){
-                wheels[i].motorTorque = totalPower / 4 ;
-                // wheels[i].brakeTorque = brakPower;
+                wheels[i].motorTorque = totalPower / 4;
+                wheels[i].brakeTorque = brakPower;
             }
         }else if(drive == driveType.rearWheelDrive){
-            for (int i = 2; i < wheels.Length; i++)
+            wheels[2].motorTorque = totalPower / 2;
+            wheels[3].motorTorque = totalPower / 2;
+
+            for (int i = 0; i < wheels.Length; i++)
             {
-                wheels[i].motorTorque = (totalPower / 2);}
-            
-        //     wheels[3].motorTorque = (totalPower / 2);
-
-        //     // for (int i = 0; i < wheels.Length; i++)
-        //     // {
-        //     //     wheels[i].brakeTorque = brakPower;
-        //     // }
-         }
-         else{
-             for (int i = 0; i < wheels.Length - 2; i++){
-             wheels[i].motorTorque = (totalPower / 2);}
-            //  wheels[1].motorTorque = IM.vertical *(totalPower / 2);
-
-            // for (int i = 0; i < wheels.Length; i++)
-            // {
-            //     wheels[i].brakeTorque = brakPower;
-            // }
+                wheels[i].brakeTorque = brakPower;
+            }
         }
-    KPH = rigidbody.velocity.magnitude * 3.6f;  
-        
-    if(IM.handbrake){
-        wheels[3].brakeTorque = wheels[2].brakeTorque = brakepower;
-    }else{
-        wheels[3].brakeTorque = wheels[2].brakeTorque = 0;
-    }
-    if(IM.boosting){
+        else{
+            wheels[0].motorTorque = totalPower / 2;
+            wheels[1].motorTorque = totalPower / 2;
+
+            for (int i = 0; i < wheels.Length; i++)
+            {
+                wheels[i].brakeTorque = brakPower;
+            }
+        }
+        if(IM.boosting){
         rigidbody.AddForce(Vector3.forward * thrust);
     }
+        KPH = rigidbody.velocity.magnitude * 3.6f;
+
+
     }
+
+    private void brakeVehicle(){
+
+        if (vertical < 0){
+            brakPower =(KPH >= 10)? 500 : 0;
+        }
+        else if (vertical == 0 &&(KPH <= 10 || KPH >= -10)){
+            brakPower = 10;
+        }
+        else{
+            brakPower = 0;
+        }
+ 
+
+    }
+   
+    
   
 
 private void calculateEnginePower(){
@@ -184,7 +196,7 @@ private void calculateEnginePower(){
     }
 
     
-  private void steerVehicle(){
+    private void steerVehicle(){
     if (horizontal > 0 ) {
 				//rear tracks size is set to 1.5f       wheel base has been set to 2.55f
             wheels[0].steerAngle = Mathf.Rad2Deg * Mathf.Atan(2.55f / (radius + (1.5f / 2))) * horizontal;
@@ -242,7 +254,76 @@ private void calculateEnginePower(){
             slip[i] = wheelHit.forwardSlip;
         }
     }
-}
+     private void adjustTraction(){
+            //tine it takes to go from normal drive to drift 
+        float driftSmothFactor = .7f * Time.deltaTime;
+
+		if(IM.handbrake){
+            sidewaysFriction = wheels[0].sidewaysFriction;
+            forwardFriction = wheels[0].forwardFriction;
+
+            float velocity = 0;
+            sidewaysFriction.extremumValue =sidewaysFriction.asymptoteValue = forwardFriction.extremumValue = forwardFriction.asymptoteValue =
+                Mathf.SmoothDamp(forwardFriction.asymptoteValue,driftFactor * handBrakeFrictionMultiplier,ref velocity ,driftSmothFactor );
+
+            for (int i = 0; i < 4; i++) {
+                wheels [i].sidewaysFriction = sidewaysFriction;
+                wheels [i].forwardFriction = forwardFriction;
+            }
+
+            sidewaysFriction.extremumValue = sidewaysFriction.asymptoteValue = forwardFriction.extremumValue = forwardFriction.asymptoteValue =  1.1f;
+                //extra grip for the front wheels
+            for (int i = 0; i < 2; i++) {
+                wheels [i].sidewaysFriction = sidewaysFriction;
+                wheels [i].forwardFriction = forwardFriction;
+            }
+            rigidbody.AddForce(transform.forward * (KPH / 400) * 10000 );
+		}
+            //executed when handbrake is being held
+        else{
+
+			forwardFriction = wheels[0].forwardFriction;
+			sidewaysFriction = wheels[0].sidewaysFriction;
+
+			forwardFriction.extremumValue = forwardFriction.asymptoteValue = sidewaysFriction.extremumValue = sidewaysFriction.asymptoteValue = 
+                ((KPH * handBrakeFrictionMultiplier) / 300) + 1;
+
+			for (int i = 0; i < 4; i++) {
+				wheels [i].forwardFriction = forwardFriction;
+				wheels [i].sidewaysFriction = sidewaysFriction;
+
+			}
+        }
+
+            //checks the amount of slip to control the drift
+		for(int i = 2;i<4 ;i++){
+
+            WheelHit wheelHit;
+
+            wheels[i].GetGroundHit(out wheelHit);
+                //smoke
+            if(wheelHit.sidewaysSlip >= 0.3f || wheelHit.sidewaysSlip <= -0.3f ||wheelHit.forwardSlip >= 0.3f || wheelHit.forwardSlip <= -0.3f)
+                playPauseSmoke = true;
+            else
+                playPauseSmoke = false;
+                        
+
+			if(wheelHit.sidewaysSlip < 0 )	driftFactor = (1 + -IM.horizontal) * Mathf.Abs(wheelHit.sidewaysSlip) ;
+
+			if(wheelHit.sidewaysSlip > 0 )	driftFactor = (1 + IM.horizontal )* Mathf.Abs(wheelHit.sidewaysSlip );
+		}
+     }	
+		private IEnumerator timedLoop(){
+		while(true){
+			yield return new WaitForSeconds(.7f);
+            radius = 6 + KPH / 20;
+            
+		}
+	}
+	}
+
+
+
 
 
 
